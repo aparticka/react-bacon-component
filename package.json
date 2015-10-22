@@ -1,0 +1,34 @@
+{
+  "name": "react-bacon-component",
+  "version": "1.0.0",
+  "description": "Utility for attaching Bacon.js to React components",
+  "main": "lib/index.js",
+  "scripts": {
+    "build": "babel src -d lib"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aparticka/react-bacon-component.git"
+  },
+  "keywords": [
+    "react",
+    "bacon",
+    "baconjs"
+  ],
+  "author": "Adam Particka <a.particka@gmail.com> (http://aparticka.com)",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/aparticka/react-bacon-component/issues"
+  },
+  "homepage": "https://github.com/aparticka/react-bacon-component",
+  "devDependencies": {
+    "babel": "^5.8.23",
+    "babel-core": "^5.8.25",
+    "baconjs": "^0.7.77",
+    "react": "^0.14.0"
+  },
+  "dependencies": {
+    "megablob": "^0.2.0",
+    "react-pure-render": "^1.0.2"
+  }
+}
