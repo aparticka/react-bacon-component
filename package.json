@@ -1,10 +1,12 @@
 {
   "name": "react-bacon-component",
-  "version": "1.0.0",
+  "version": "1.0.3",
   "description": "Utility for attaching Bacon.js to React components",
   "main": "lib/index.js",
   "scripts": {
-    "build": "babel src -d lib"
+    "build": "babel src -d lib",
+    "clean": "rimraf lib",
+    "prepublish": "npm run clean && npm run build"
   },
   "repository": {
     "type": "git",
@@ -25,7 +27,8 @@
     "babel": "^5.8.23",
     "babel-core": "^5.8.25",
     "baconjs": "^0.7.77",
-    "react": "^0.14.0"
+    "react": "^0.14.0",
+    "rimraf": "^2.4.3"
   },
   "dependencies": {
     "megablob": "^0.2.0",
