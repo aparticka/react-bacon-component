@@ -12,9 +12,7 @@ npm install --save react-bacon-component baconjs
 import { createBaconComponent } from 'react-bacon-component';
 ```
 
-### `createBaconComponent(mapProps)`
-### `createBaconComponent(mapProps, render)`
-### `createBaconComponent(mapProps, Component)`
+### `createBaconComponent(mapProps, [renderOrComponent], [shouldPassThroughProps])`
 
 Creates a React component or a higher-order component.
 
@@ -38,7 +36,7 @@ render(<CountToNumber number={3} />, targetEl);
 
 The `mapProps()` function above uses the props passed to the component that is produced to determine when to stop counting.
 
-If `mapProps()` is defined as a function taking no arguments, the props are automatically passed through to the child element.
+If `shouldPassThroughProps` is set to `true`, the props are automatically passed through to the child element.
 
 ```js
 const Counter = createBaconComponent(() => {
@@ -47,12 +45,12 @@ const Counter = createBaconComponent(() => {
   return Bacon.combineTemplate({
     count: countP
   });
-}, props => <div>{props.name} - {props.count}</div>);
+}, props => <div>{props.name} - {props.count}</div>, true);
 
 render(<Counter name='My Counter' />, targetEl);
 ```
 
-Even though the props are not explicitly returned from `mapProps()`, because it took no arguments the props are passed through and are available in the render method of the resulting component.
+Even though the props are not explicitly returned from `mapProps()`, because `shouldPassThroughProps` was set to `true` the props are passed through and are available in the render method of the resulting component.
 
 If the second parameter of `createBaconComponent` is left off, a higher-order component is returned.
 

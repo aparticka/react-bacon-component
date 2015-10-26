@@ -6,7 +6,7 @@ function isReactComponent(c) {
   return c && c.prototype && typeof c.prototype.render === 'function';
 }
 
-function createBaconComponent(mapProps, renderOrComponent) {
+function createBaconComponent(mapProps, renderOrComponent, shouldPassThroughProps = false) {
   const render = isReactComponent(renderOrComponent) ?
     props => createElement(renderOrComponent, props) :
     renderOrComponent;
@@ -20,7 +20,7 @@ function createBaconComponent(mapProps, renderOrComponent) {
       this.propsP = this.receive.$.map(x => x[0]).startWith(props).toProperty();
       this.contextP = this.receive.$.map(x => x[1]).startWith(context).toProperty();
 
-      this.childPropsP = mapProps.length == 0 ?
+      this.childPropsP = shouldPassThroughProps ?
         mapProps().combine(this.propsP, (childProps, props) => ({ ...props, ...childProps })) :
         mapProps(this.propsP, this.contextP);
 
@@ -55,10 +55,10 @@ function createBaconComponent(mapProps, renderOrComponent) {
 }
 
 function curry(func) {
-  return (a, b) =>
+  return (a, b, c) =>
     typeof b === 'undefined' ?
-      c => func(a, c) :
-      func(a, b);
+      d => func(a, d, c) :
+      func(a, b, c);
 }
 
 export default curry(createBaconComponent);
