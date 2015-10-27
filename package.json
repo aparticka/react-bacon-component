@@ -1,6 +1,6 @@
 {
   "name": "react-bacon-component",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Utility for attaching Bacon.js to React components",
   "main": "lib/index.js",
   "scripts": {

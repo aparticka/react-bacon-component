@@ -42,11 +42,26 @@ describe('createBaconComponent', () => {
     const component = getRenderedComponentInContainer(Component, Container);
     expect(component.props.passed).to.equal('fromBacon');
   });
-  it('should have props accessible in propsP', () => {
-    const Container = createBaconComponent(propsP => {
+  it('should be passed props and context `Property`\'s accessible in mapProps', () => {
+    let props, context;
+    const Container = createBaconComponent((propsP, contextP) => {
+      props = propsP;
+      context = contextP;
       return propsP;
     }, render);
     const component = getRenderedComponentInContainer(Component, Container);
-    expect(component.props.pass).to.equal('through');
+    expect(typeof props.changes).to.equal('function');
+    expect(typeof context.changes).to.equal('function');
+  });
+  it('should be passed props and context `Property`\'s accessible in mapProps if shouldPassThroughProps true', () => {
+    let props, context;
+    const Container = createBaconComponent((propsP, contextP) => {
+      props = propsP;
+      context = contextP;
+      return propsP;
+    }, render, true);
+    const component = getRenderedComponentInContainer(Component, Container);
+    expect(typeof props.changes).to.equal('function');
+    expect(typeof context.changes).to.equal('function');
   });
 });

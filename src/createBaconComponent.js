@@ -20,9 +20,12 @@ function createBaconComponent(mapProps, renderOrComponent, shouldPassThroughProp
       this.propsP = this.receive.$.map(x => x[0]).startWith(props).toProperty();
       this.contextP = this.receive.$.map(x => x[1]).startWith(context).toProperty();
 
-      this.childPropsP = shouldPassThroughProps ?
-        mapProps().combine(this.propsP, (childProps, props) => ({ ...props, ...childProps })) :
-        mapProps(this.propsP, this.contextP);
+      this.childPropsP = mapProps(this.propsP, this.contextP);
+
+      if (shouldPassThroughProps) {
+        this.childPropsP = this.childPropsP
+          .combine(this.propsP, (childProps, props) => ({ ...props, ...childProps }));
+      }
 
       this.componentHasMounted = false;
 
