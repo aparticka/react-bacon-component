@@ -1,6 +1,7 @@
 import { Component, createElement } from 'react';
 import shouldPureComponentUpdate from 'react-pure-render/function';
 import { createAction } from 'megablob';
+import Bacon from 'baconjs';
 
 function isReactComponent(c) {
   return c && c.prototype && typeof c.prototype.render === 'function';
@@ -20,25 +21,35 @@ function createBaconComponent(mapProps, renderOrComponent, shouldPassThroughProp
       this.propsP = this.receive.$.map(x => x[0]).startWith(props).toProperty();
       this.contextP = this.receive.$.map(x => x[1]).startWith(context).toProperty();
 
-      this.childPropsP = mapProps(this.propsP, this.contextP);
+      this.setComponentHasMounted = createAction();
+      
+      this.componentHasMountedP = this.setComponentHasMounted.$
+        .skipDuplicates()
+        .startWith(false)
+        .toProperty();
+
+      this.childPropsP = mapProps(this.propsP, this.contextP, this.componentHasMountedP);
 
       if (shouldPassThroughProps) {
         this.childPropsP = this.childPropsP
           .combine(this.propsP, (childProps, props) => ({ ...props, ...childProps }));
       }
 
-      this.componentHasMounted = false;
+      const subscribeP = Bacon.combineTemplate({
+        childProps: this.childPropsP,
+        componentHasMounted: this.componentHasMountedP
+      });
 
-      this.unsubscribe = this.childPropsP
-        .onValue(childProps =>
-          this.componentHasMounted ?
+      this.unsubscribe = subscribeP
+        .onValue(({ childProps, componentHasMounted }) =>
+          componentHasMounted ?
             this.setState(childProps) :
             this.state = childProps
         );
     }
 
     componentDidMount() {
-      this.componentHasMounted = true;
+      this.setComponentHasMounted(true);
     }
 
     componentWillReceiveProps(nextProps, nextContext) {
