@@ -64,4 +64,8 @@ describe('createBaconComponent', () => {
     expect(typeof props.changes).to.equal('function');
     expect(typeof context.changes).to.equal('function');
   });
+  it('should not throw an error when not returning anything from mapProps with shouldPassThroughProps true', () => {
+    const Container = createBaconComponent(() => {}, render, true);
+    expect(() => getRenderedComponentInContainer(Component, Container)).to.not.throw(Error);
+  });
 });

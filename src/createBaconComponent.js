@@ -7,6 +7,10 @@ function isReactComponent(c) {
   return c && c.prototype && typeof c.prototype.render === 'function';
 }
 
+function isProperty(p) {
+  return p && typeof p.changes === 'function';
+}
+
 function createBaconComponent(mapProps, renderOrComponent, shouldPassThroughProps = false) {
   const render = isReactComponent(renderOrComponent) ?
     props => createElement(renderOrComponent, props) :
@@ -31,21 +35,25 @@ function createBaconComponent(mapProps, renderOrComponent, shouldPassThroughProp
       this.childPropsP = mapProps(this.propsP, this.contextP, this.componentHasMountedP);
 
       if (shouldPassThroughProps) {
-        this.childPropsP = this.childPropsP
-          .combine(this.propsP, (childProps, props) => ({ ...props, ...childProps }));
+        this.childPropsP = isProperty(this.childPropsP)
+          ? this.childPropsP
+            .combine(this.propsP, (childProps, props) => ({ ...props, ...childProps }))
+          : this.propsP;
       }
 
-      const subscribeP = Bacon.combineTemplate({
-        childProps: this.childPropsP,
-        componentHasMounted: this.componentHasMountedP
-      });
+      if (isProperty(this.childPropsP)) {
+        const subscribeP = Bacon.combineTemplate({
+          childProps: this.childPropsP,
+          componentHasMounted: this.componentHasMountedP
+        });
 
-      this.unsubscribe = subscribeP
-        .onValue(({ childProps, componentHasMounted }) =>
-          componentHasMounted ?
-            this.setState(childProps) :
-            this.state = childProps
+        this.unsubscribe = subscribeP
+          .onValue(({ childProps, componentHasMounted }) =>
+            componentHasMounted ?
+              this.setState(childProps) :
+              this.state = childProps
         );
+      }
     }
 
     componentDidMount() {
@@ -59,7 +67,9 @@ function createBaconComponent(mapProps, renderOrComponent, shouldPassThroughProp
     shouldComponentUpdate = shouldPureComponentUpdate;
 
     componentWillUnmount() {
-      this.unsubscribe();
+      if (typeof this.unsubscribe === 'function') {
+        this.unsubscribe();
+      }
     }
 
     render() {
