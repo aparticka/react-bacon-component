@@ -16,7 +16,7 @@ import { createBaconComponent } from 'react-bacon-component';
 
 Creates a React component or a higher-order component.
 
-`mapProps()` maps Bacon.js `Property`s containing the props, context, component mount status to a `Property` that will be passed as props to the child element.
+`mapProps()` maps Bacon.js `Property`s containing the props, context, and component mount status to a `Property` that will be passed as props to the child element.
 
 `mapProps([propsP], [contextP], [componentHasMountedP], [addSubscription])`
 
