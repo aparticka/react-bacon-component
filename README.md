@@ -21,8 +21,11 @@ Creates a React component or a higher-order component.
 `mapProps([propsP], [contextP], [componentHasMountedP], [addSubscription])`
 
 `propsP` A `Property` containing the owner component's props
+
 `contextP` A `Property` containing the context
+
 `componentHasMountedP` A `Property` containing the component's mount status (boolean)
+
 `addSubscription` A function that takes a subscription to be unsubscribed from when the component unmounts
 
 ```js
