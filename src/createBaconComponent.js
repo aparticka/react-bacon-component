@@ -32,7 +32,11 @@ function createBaconComponent(mapProps, renderOrComponent, shouldPassThroughProp
         .startWith(false)
         .toProperty();
 
-      this.childPropsP = mapProps(this.propsP, this.contextP, this.componentHasMountedP);
+      this.subscriptions = [];
+
+      this.addSubscription = subscription => this.subscriptions.push(subscription);
+
+      this.childPropsP = mapProps(this.propsP, this.contextP, this.componentHasMountedP, this.addSubscription);
 
       if (shouldPassThroughProps) {
         this.childPropsP = isProperty(this.childPropsP)
@@ -67,6 +71,7 @@ function createBaconComponent(mapProps, renderOrComponent, shouldPassThroughProp
     shouldComponentUpdate = shouldPureComponentUpdate;
 
     componentWillUnmount() {
+      this.subscriptions.forEach(unsubscribe => unsubscribe());
       if (typeof this.unsubscribe === 'function') {
         this.unsubscribe();
       }

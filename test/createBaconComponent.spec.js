@@ -1,5 +1,6 @@
 import { createBaconComponent } from '../src/index';
 import React from 'react';
+import ReactDOM from 'react-dom';
 import TestUtils from 'react-addons-test-utils';
 import Bacon from 'baconjs';
 import { expect } from 'chai';
@@ -9,6 +10,13 @@ function getRenderedComponentInContainer(Component, Container) {
     <Container pass='through' />
   );
   return TestUtils.findRenderedComponentWithType(rendered, Component);
+}
+
+function createAction() {
+  const bus = new Bacon.Bus();
+  const action = value => bus.push(value);
+  action.$ = bus;
+  return action;
 }
 
 describe('createBaconComponent', () => {
@@ -67,5 +75,43 @@ describe('createBaconComponent', () => {
   it('should not throw an error when not returning anything from mapProps with shouldPassThroughProps true', () => {
     const Container = createBaconComponent(() => {}, render, true);
     expect(() => getRenderedComponentInContainer(Component, Container)).to.not.throw(Error);
+  });
+  it('should not clean up subscriptions after unmount if not sent through addSubscription', () => {
+    const increment = createAction();
+    let count = 0;
+    const Container = createBaconComponent(() => {
+      increment.$
+        .onValue(() => count += 1);
+    }, render);
+    expect(count).to.equal(0);
+    const component = getRenderedComponentInContainer(Component, Container);
+    expect(count).to.equal(0);
+    increment();
+    expect(count).to.equal(1);
+    increment();
+    expect(count).to.equal(2);
+    ReactDOM.unmountComponentAtNode(ReactDOM.findDOMNode(component).parentNode);
+    expect(count).to.equal(2);
+    increment();
+    expect(count).to.equal(3);
+  });
+  it('should clean up subscriptions after unmount if sent through addSubscription', () => {
+    const increment = createAction();
+    let count = 0;
+    const Container = createBaconComponent((propsP, contextP, componentHasMountedP, addSubscription) => {
+      addSubscription(increment.$
+        .onValue(() => count += 1));
+    }, render);
+    expect(count).to.equal(0);
+    const component = getRenderedComponentInContainer(Component, Container);
+    expect(count).to.equal(0);
+    increment();
+    expect(count).to.equal(1);
+    increment();
+    expect(count).to.equal(2);
+    ReactDOM.unmountComponentAtNode(ReactDOM.findDOMNode(component).parentNode);
+    expect(count).to.equal(2);
+    increment();
+    expect(count).to.equal(2);
   });
 });
