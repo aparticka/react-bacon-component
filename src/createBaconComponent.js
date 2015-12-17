@@ -1,14 +1,11 @@
 import { Component, createElement } from 'react';
 import shouldPureComponentUpdate from 'react-pure-render/function';
-import { createAction } from 'megablob';
 import Bacon from 'baconjs';
+import createAction from './createAction';
+import isProperty from './isProperty';
 
 function isReactComponent(c) {
   return c && c.prototype && typeof c.prototype.render === 'function';
-}
-
-function isProperty(p) {
-  return p && typeof p.changes === 'function';
 }
 
 function createBaconComponent(mapProps, renderOrComponent, shouldPassThroughProps = false) {

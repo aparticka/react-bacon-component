@@ -1,5 +1,9 @@
+import createAction from './createAction';
 import createBaconComponent from './createBaconComponent';
+import isProperty from './isProperty';
 
 export {
-  createBaconComponent
+  createAction,
+  createBaconComponent,
+  isProperty
 };
