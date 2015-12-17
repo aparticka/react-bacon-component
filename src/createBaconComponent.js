@@ -4,11 +4,10 @@ import Bacon from 'baconjs';
 import createAction from './createAction';
 import isProperty from './isProperty';
 
-function isReactComponent(c) {
-  return c && c.prototype && typeof c.prototype.render === 'function';
-}
+const isReactComponent = c =>
+  c && c.prototype && typeof c.prototype.render === 'function';
 
-function createBaconComponent(mapProps, renderOrComponent, shouldPassThroughProps = false) {
+const createBaconComponent = (mapProps, renderOrComponent, shouldPassThroughProps = false) => {
   const render = isReactComponent(renderOrComponent) ?
     props => createElement(renderOrComponent, props) :
     renderOrComponent;
@@ -78,9 +77,9 @@ function createBaconComponent(mapProps, renderOrComponent, shouldPassThroughProp
       return render(this.state);
     }
   }
-}
+};
 
-function curry(func) {
+const curry = func => {
   return (a, b, c) =>
     typeof b === 'undefined' ?
       d => func(a, d, c) :
