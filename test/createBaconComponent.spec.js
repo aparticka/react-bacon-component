@@ -98,7 +98,7 @@ describe('createBaconComponent', () => {
   it('should clean up subscriptions after unmount if sent through addSubscription', () => {
     const increment = createAction();
     let count = 0;
-    const Container = createBaconComponent((propsP, contextP, componentHasMountedP, addSubscription) => {
+    const Container = createBaconComponent((propsP, contextP, componentIsMountedP, addSubscription) => {
       addSubscription(increment.$
         .onValue(() => count += 1));
     }, render);
@@ -113,5 +113,16 @@ describe('createBaconComponent', () => {
     expect(count).to.equal(2);
     increment();
     expect(count).to.equal(2);
+  });
+  it('should notify when component mounts and unmounts', () => {
+    let isMounted = false;
+    const Container = createBaconComponent((propsP, contextP, componentIsMountedP) => {
+      componentIsMountedP.onValue(status => isMounted = status);
+    }, render);
+    expect(isMounted).to.equal(false);
+    const component = getRenderedComponentInContainer(Component, Container);
+    expect(isMounted).to.equal(true);
+    ReactDOM.unmountComponentAtNode(ReactDOM.findDOMNode(component).parentNode);
+    expect(isMounted).to.equal(false);
   });
 });

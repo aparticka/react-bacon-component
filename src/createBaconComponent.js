@@ -21,9 +21,9 @@ const createBaconComponent = (mapProps, renderOrComponent, shouldPassThroughProp
       this.propsP = this.receive.$.map(x => x[0]).startWith(props).toProperty();
       this.contextP = this.receive.$.map(x => x[1]).startWith(context).toProperty();
 
-      this.setComponentHasMounted = createAction();
+      this.setComponentIsMounted = createAction();
       
-      this.componentHasMountedP = this.setComponentHasMounted.$
+      this.componentIsMountedP = this.setComponentIsMounted.$
         .skipDuplicates()
         .startWith(false)
         .toProperty();
@@ -32,7 +32,7 @@ const createBaconComponent = (mapProps, renderOrComponent, shouldPassThroughProp
 
       this.addSubscription = subscription => this.subscriptions.push(subscription);
 
-      this.childPropsP = mapProps(this.propsP, this.contextP, this.componentHasMountedP, this.addSubscription);
+      this.childPropsP = mapProps(this.propsP, this.contextP, this.componentIsMountedP, this.addSubscription);
 
       if (shouldPassThroughProps) {
         this.childPropsP = isProperty(this.childPropsP)
@@ -44,12 +44,12 @@ const createBaconComponent = (mapProps, renderOrComponent, shouldPassThroughProp
       if (isProperty(this.childPropsP)) {
         const subscribeP = Bacon.combineTemplate({
           childProps: this.childPropsP,
-          componentHasMounted: this.componentHasMountedP
+          componentIsMounted: this.componentIsMountedP
         });
 
         this.unsubscribe = subscribeP
-          .onValue(({ childProps, componentHasMounted }) =>
-            componentHasMounted ?
+          .onValue(({ childProps, componentIsMounted }) =>
+            componentIsMounted ?
               this.setState(childProps) :
               this.state = childProps
         );
@@ -57,7 +57,7 @@ const createBaconComponent = (mapProps, renderOrComponent, shouldPassThroughProp
     }
 
     componentDidMount() {
-      this.setComponentHasMounted(true);
+      this.setComponentIsMounted(true);
     }
 
     componentWillReceiveProps(nextProps, nextContext) {
@@ -67,6 +67,7 @@ const createBaconComponent = (mapProps, renderOrComponent, shouldPassThroughProp
     shouldComponentUpdate = shouldPureComponentUpdate;
 
     componentWillUnmount() {
+      this.setComponentIsMounted(false);
       this.subscriptions.forEach(unsubscribe => unsubscribe());
       if (typeof this.unsubscribe === 'function') {
         this.unsubscribe();
